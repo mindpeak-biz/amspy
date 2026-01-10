@@ -1,0 +1,1 @@
+# This file will contain the methods that will return JSON to the Auth Service routes

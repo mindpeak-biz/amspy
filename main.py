@@ -1,8 +1,47 @@
 from fastapi import FastAPI
+from mangum import Mangum  # 1. Import it
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"status": "FastAPI is running on Ubuntu!"}
+# This file will have all the routes (in sections, by service, so that the monolith can later be decomposed)
+
+# -----------------------------------------------------------------------------------------
+# routes for the Auth Service
+@app.get("/services/auth/")
+def auth_home():
+    return {"message": "Hello from the Auth Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Core Service
+@app.get("/services/core/")
+def core_home():
+    return {"message": "Hello from the Core Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Users Service
+@app.get("/services/users/")
+def users_home():
+    return {"message": "Hello from the Users Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Notifications Service
+@app.get("/services/notifications/")
+def notifications_home():
+    return {"message": "Hello from the Notifications Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Branding Service
+@app.get("/services/branding/")
+def branding_home():
+    return {"message": "Hello from the Branding Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Flash Card Service
+@app.get("/services/flashcards/")
+def branding_home():
+    return {"message": "Hello from the Flash Card Service!"}
+
+handler = Mangum(app)
+
+
 

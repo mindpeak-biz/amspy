@@ -1,0 +1,23 @@
+In the API Gateway configuration:
+- any request where the path starts with /services/, direct the request to lambda.
+- any other request will be served from the S3 bucket.
+
+=========================================================================================================================
+
+When developing, there are two separate processes you need to start up:
+
+One is for the APIs (REST and HTMX) => FastAPI runs on port 8000
+1. cd /home/aki/dev/amspy
+2. $ uv run fastapi dev main.py
+3. Examples => [GET] localhost:8000/services/auth/htmx/login-form (get request for retrieving the login form)
+            => [POST] localhost:8000/services/auth/api/login (post request for submitting the login form for processing)
+            => [GET] localhost:8000/services/core/html/member-footer.html (the member footer) 
+
+One is for the public static pages => PHP built-in web server runs on port 3000 
+4. cd /home/aki/dev/amspy/public (NOTE: the files in this folder will be stored in an S3 bucket) 
+5. php -S localhost:3000
+6. Examples => localhost:3000/home.html (this page basically acts as the SPA)
+            => localhost:3000/css/main.css (this file will hold the custom styles for the entire app, excluding HTMX templates)
+            => localhost:3000/js/main.js (this file will hold all the shared javascripts for the entire app)
+            => localhost:3000/img/ams_logo.jpg (this is the AMS logo)
+
