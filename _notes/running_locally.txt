@@ -21,3 +21,11 @@ One is for the public static pages => PHP built-in web server runs on port 3000
             => localhost:3000/js/main.js (this file will hold all the shared javascripts for the entire app)
             => localhost:3000/img/ams_logo.jpg (this is the AMS logo)
 
+========================================================================================================================
+
+HTMX
+----
+I'm using HTMX to give the feeling of an SPA (single page application) 
+
+Even the static pages in the public folder (i.e. home, about, faq, contact) 
+that are to be served from S3 and CloudFront will be requested via HTMX.
