@@ -10,3 +10,33 @@ These instructions are for deploying a zip Lambda that contains the package depe
 along with the FastAPI application.
 
 
+STRATEGY:
+---------
+Use uv to export a requirements.txt from your project and then use uv pip install with a specific target platform flag. 
+This ensures you get the manylinux wheels compatible with AWS Lambda.
+
+Run these commands from your project root. This assumes your FastAPI app code is in a folder named app/ 
+and your entry point is app/main.py
+
+# 1. Export dependencies from your uv project (excluding dev tools)
+uv export --frozen --no-dev --no-editable -o requirements.txt
+
+# 2. Install dependencies into a temporary folder
+# We target x86_64 and manylinux to match the Lambda environment
+uv pip install \
+    --no-installer-metadata \
+    --target package_dir \
+    --python-platform x86_64-manylinux2014 \
+    --python 3.12 \
+    -r requirements.txt
+
+# 3. Copy your application code into the same folder
+cp -r app package_dir/
+
+# 4. Create the ZIP file
+cd package_dir
+zip -r ../lambda_deployment.zip .
+cd ..
+
+# 5. Cleanup
+rm -rf package_dir requirements.txt

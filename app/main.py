@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from mangum import Mangum  # 1. Import it
+from mangum import Mangum
 
 app = FastAPI()
 
@@ -11,9 +11,9 @@ app = FastAPI()
 def welcome():
     return {"message": "Hello from FastAPI on Lambda and Mangum!"}
 
-@app.get("/db/")
-def db_test():
-    return {"message": "Connected to Postgres!"}
+@app.get("/users/")
+def get_users():
+    return {"message": "Connected to Postgres! - Retrieving users soon!"}
 
 # -----------------------------------------------------------------------------------------
 # routes for the Auth Service
