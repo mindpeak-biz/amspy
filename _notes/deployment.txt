@@ -1,0 +1,12 @@
+INSTRUCTIONS FOR DEPLOYING A FASTAPI APP TO AWS LAMBDA
+======================================================
+
+You can deploy the app as a zip Lambda, or as a Docker container.
+
+You can either deploy the FastAPI project without the Python packages included in the zip file, 
+or just the app in the zip file as long as the Python packages that are the dependencies are in a Lambda layer that you Lambda has access to.
+
+These instructions are for deploying a zip Lambda that contains the package dependencies within it, 
+along with the FastAPI application.
+
+

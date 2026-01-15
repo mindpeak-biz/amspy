@@ -8,7 +8,7 @@ When developing, there are two separate processes you need to start up:
 
 One is for the APIs (REST and HTMX) => FastAPI runs on port 8000
 1. cd /home/aki/dev/amspy
-2. $ uv run fastapi dev main.py
+2. $ uv run fastapi dev ./app/main.py 
 3. Examples => [GET] localhost:8000/services/auth/htmx/login-form (get request for retrieving the login form)
             => [POST] localhost:8000/services/auth/api/login (post request for submitting the login form for processing)
             => [GET] localhost:8000/services/core/html/member-footer.html (the member footer) 

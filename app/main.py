@@ -6,6 +6,16 @@ app = FastAPI()
 # This file will have all the routes (in sections, by service, so that the monolith can later be decomposed)
 
 # -----------------------------------------------------------------------------------------
+# routes for testing various things
+@app.get("/")
+def welcome():
+    return {"message": "Hello from FastAPI on Lambda and Mangum!"}
+
+@app.get("/db/")
+def db_test():
+    return {"message": "Connected to Postgres!"}
+
+# -----------------------------------------------------------------------------------------
 # routes for the Auth Service
 @app.get("/services/auth/")
 def auth_home():
