@@ -1,11 +1,62 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from datetime import datetime
+from typing import Optional, Dict, Any
+from sqlmodel import SQLModel, Field, Column
+from sqlalchemy import String, DateTime, JSON, text
+from sqlalchemy.dialects.postgresql import JSONB
 
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    username: str = Field(index=True)
-    email: str
 
+class UserBase(SQLModel):
+    email_address: str = Field(sa_column=Column(String(36), nullable=False))
+    sponsor_code: str = Field(sa_column=Column(String(7), nullable=False))
+    user_type: str = Field(default="member")
+    user_plan: str = Field(default="sponsored member")
+    member_profile_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSONB))
+    sponsor_profile_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSONB))
+
+
+class UserPublic(UserBase):
+    user_luid: str
+    created_at: datetime
+
+
+class User(UserBase, table=True):
+    __tablename__ = "users"
+    __table_args__ = {"schema": "public"}
+
+    # Primary Key with Postgres-side default
+    user_luid: str = Field(
+        sa_column=Column(
+            String(36), 
+            primary_key=True, 
+            server_default=text("gen_entity_luid()")
+        )
+    )
+
+    encrypted_password: str = Field(sa_column=Column(String(200), nullable=False))
+    
+    password_reset_guid: Optional[str] = Field(default=None, sa_column=Column(String(36)))
+    password_reset_expiry: Optional[datetime] = Field(
+        default=None, 
+        sa_column=Column(DateTime(timezone=True))
+    )
+    
+    # Timestamps with server-side defaults
+    created_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True), 
+            nullable=False, 
+            server_default=text("now()")
+        )
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True), 
+            nullable=False, 
+            server_default=text("now()"),
+            onupdate=text("now()")  # Keeps the updated_at fresh
+        )
+    )
+    
 
 '''
 CREATE TABLE IF NOT EXISTS public.users

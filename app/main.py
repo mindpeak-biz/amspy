@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from mangum import Mangum
+from models import User, UserPublic
+
 
 app = FastAPI()
 
@@ -29,9 +31,11 @@ def core_home():
 
 # -----------------------------------------------------------------------------------------
 # routes for the Users Service
-@app.get("/services/users/")
-def users_home():
-    return {"message": "Hello from the Users Service!"}
+# GET: Uses UserPublic to hide the password
+@app.get("/users", response_model=list[UserPublic])
+def read_users(session: Session = Depends(get_session)):
+    return session.exec(select(User)).all()
+
 
 # -----------------------------------------------------------------------------------------
 # routes for the Notifications Service
