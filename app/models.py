@@ -5,6 +5,12 @@ from sqlalchemy import String, DateTime, JSON, text
 from sqlalchemy.dialects.postgresql import JSONB
 
 
+# Note: When using Pydantic, you need three models for each entity in your application.
+#   Using the User entity for the example we have the following 3 models:
+#   1. UserBase: the user base class (the other two will inherit this class)
+#   2. User: for inserts and updates (ie. creating the object to write to the database)
+#   3. UserPublic: for selects (ie. as the DTO object that will return the data to the user)
+
 class UserBase(SQLModel):
     email_address: str = Field(sa_column=Column(String(36), nullable=False))
     sponsor_code: str = Field(sa_column=Column(String(7), nullable=False))
@@ -12,11 +18,6 @@ class UserBase(SQLModel):
     user_plan: str = Field(default="sponsored member")
     member_profile_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSONB))
     sponsor_profile_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSONB))
-
-
-class UserPublic(UserBase):
-    user_luid: str
-    created_at: datetime
 
 
 class User(UserBase, table=True):
@@ -32,9 +33,15 @@ class User(UserBase, table=True):
         )
     )
 
-    encrypted_password: str = Field(sa_column=Column(String(200), nullable=False))
+    encrypted_password: str = Field(
+        sa_column=Column(String(200), 
+        nullable=False)
+    )
     
-    password_reset_guid: Optional[str] = Field(default=None, sa_column=Column(String(36)))
+    password_reset_guid: Optional[str] = Field(
+        default=None, 
+        sa_column=Column(String(36))
+    )
     password_reset_expiry: Optional[datetime] = Field(
         default=None, 
         sa_column=Column(DateTime(timezone=True))
@@ -57,6 +64,10 @@ class User(UserBase, table=True):
         )
     )
     
+class UserPublic(UserBase):
+    user_luid: str
+    created_at: datetime
+
 
 '''
 CREATE TABLE IF NOT EXISTS public.users

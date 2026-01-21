@@ -1,11 +1,26 @@
-from fastapi import FastAPI
+# This file will have all the routes (in sections, by service, so that the monolith can later be decomposed)
+
+
+from fastapi import FastAPI, Depends
 from mangum import Mangum
+from sqlmodel import create_engine, SQLModel, Session, select
 from models import User, UserPublic
+from typing import List
+
+
+# Global variables
+# Note: 
+DATABASE_URL = "postgresql://postgres:yourpassword@localhost:5432/your_db_name"
+
+
+def get_session():
+    # The engine handles the connection to Postgres
+    engine = create_engine(DATABASE_URL, echo=True)
+    with Session(engine) as session:
+        yield session
 
 
 app = FastAPI()
-
-# This file will have all the routes (in sections, by service, so that the monolith can later be decomposed)
 
 # -----------------------------------------------------------------------------------------
 # routes for testing various things
@@ -13,9 +28,19 @@ app = FastAPI()
 def welcome():
     return {"message": "Hello from FastAPI on Lambda and Mangum!"}
 
-@app.get("/users/")
-def get_users():
-    return {"message": "Connected to Postgres! - Retrieving users soon!"}
+@app.get("/users/", response_model=List[UserPublic])
+def read_users(session: Session = Depends(get_session)):
+    """ Returns a list of all users, automatically filtered to the UserPublic schema."""
+    # Select the full User table model
+    statement = select(User)
+    
+    # Execute and get all results
+    results = session.exec(statement)
+    users = results.all()
+    
+    # Return the list. 
+    # Note: FastAPI handles the JSON conversion and filters data based on UserPublic automatically.
+    return users    
 
 # -----------------------------------------------------------------------------------------
 # routes for the Auth Service
