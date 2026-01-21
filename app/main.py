@@ -4,13 +4,21 @@
 from fastapi import FastAPI, Depends
 from mangum import Mangum
 from sqlmodel import create_engine, SQLModel, Session, select
-from models import User, UserPublic
 from typing import List
+# import logging
+import traceback
+
+from models import User, UserPublic
+from services.auth import auth
+from services.core import core
+from services.users import users
+from services.notifications import notifications
+from services.branding import branding
 
 
 # Global variables
 # Note: 
-DATABASE_URL = "postgresql://postgres:yourpassword@localhost:5432/your_db_name"
+DATABASE_URL = "postgresql+psycopg://neondb_owner:npg_j5MXxnreYw6o@ep-billowing-wind-aew22j2y-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 
 
 def get_session():
@@ -31,13 +39,16 @@ def welcome():
 @app.get("/users/", response_model=List[UserPublic])
 def read_users(session: Session = Depends(get_session)):
     """ Returns a list of all users, automatically filtered to the UserPublic schema."""
-    # Select the full User table model
-    statement = select(User)
-    
-    # Execute and get all results
-    results = session.exec(statement)
-    users = results.all()
-    
+    try:
+        # Select the full User table model
+        statement = select(User)
+        # Execute and get all results
+        results = session.exec(statement)
+    except Exception as e:
+        # print((f"Error occurred: {traceback.format_exc()}"))
+        print(f"Error occurred: {str(e)}")
+    else:
+        users = results.all()
     # Return the list. 
     # Note: FastAPI handles the JSON conversion and filters data based on UserPublic automatically.
     return users    
