@@ -8,5 +8,6 @@ dependencies = [
     "fastapi[standard]>=0.128.0",
     "mangum>=0.20.0",
     "psycopg[binary]>=3.3.2",
+    "python-dotenv>=1.2.1",
     "sqlmodel>=0.0.31",
 ]

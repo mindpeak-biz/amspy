@@ -1,6 +1,7 @@
 # This file will have all the routes (in sections, by service, so that the monolith can later be decomposed)
 
-
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends
 from mangum import Mangum
 from sqlmodel import create_engine, SQLModel, Session, select
@@ -8,22 +9,22 @@ from typing import List
 # import logging
 import traceback
 
-from models import User, UserPublic
-from services.auth import auth
-from services.core import core
-from services.users import users
-from services.notifications import notifications
-from services.branding import branding
+
+from .models import User, UserPublic
+from .services.auth import auth
+from .services.core import core
+from .services.users import users
+from .services.notifications import notifications
+from .services.branding import branding
 
 
 # Global variables
-# Note: 
-DATABASE_URL = "postgresql+psycopg://neondb_owner:npg_j5MXxnreYw6o@ep-billowing-wind-aew22j2y-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-
+load_dotenv()
 
 def get_session():
     # The engine handles the connection to Postgres
-    engine = create_engine(DATABASE_URL, echo=True)
+    database_url = os.getenv("NEONDB_QA")
+    engine = create_engine(database_url, echo=True)
     with Session(engine) as session:
         yield session
 
