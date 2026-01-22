@@ -7,7 +7,7 @@ from mangum import Mangum
 from sqlmodel import create_engine, SQLModel, Session, select
 from typing import List
 # import logging
-import traceback
+#import traceback
 
 
 from .models import User, UserPublic
