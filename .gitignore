@@ -1,6 +1,6 @@
 .env
 deploy.zip
-.venv/
+/.venv/
 __pycache__/
 /layers/
 
