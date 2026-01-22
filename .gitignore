@@ -1,7 +1,9 @@
 .env
+deploy.zip
 .venv/
 __pycache__/
 /layers/
+
 
 
 
