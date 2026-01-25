@@ -9,7 +9,6 @@ from typing import List
 # import logging
 #import traceback
 
-
 from .models import User, UserPublic
 from .services.auth import auth
 from .services.core import core
@@ -31,13 +30,51 @@ def get_session():
 
 app = FastAPI()
 
+'''
+Note on mangum:
+-------------------
+# default Lambda handler function 
+def handler(event, context): # event and context are both dictionaries
+    pass
+# but since we want a FastAPI app (ASGI interface with routes), we need middleware (an adapter) to translate 
+# a normal Lambda request into an ASGI http request. The middleware for this is called mangum.
+# It handles Function URLs, API Gateway, ALB, and CloudFront Lambda@Edge events.
+
+from mangum import Mangum
+
+app = FastAPI()
+handler = Mangum(app)
+
+Having the handler variable (by wrapping your app with Mangum) means you can delete 
+the default expected def handler(event, context) function. 
+'''
+
+
 # -----------------------------------------------------------------------------------------
-# routes for testing various things
+# Naked routes (not part of a service)
 @app.get("/")
 def welcome():
     return {"message": "Hello from FastAPI on Lambda and Mangum!"}
 
-@app.get("/users/", response_model=List[UserPublic])
+# -----------------------------------------------------------------------------------------
+# routes for the Auth Service
+@app.get("/services/auth")
+def auth_home():
+    return {"message": "Hello from the Auth Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Core Service
+@app.get("/services/core")
+def core_home():
+    return {"message": "Hello from the Core Service!"}
+
+# -----------------------------------------------------------------------------------------
+# routes for the Users Service
+@app.get("/services/user")
+def core_home():
+    return {"message": "Hello from the User Service!"}
+
+@app.get("/services/user/users", response_model=List[UserPublic])
 def read_users(session: Session = Depends(get_session)):
     """ Returns a list of all users, automatically filtered to the UserPublic schema."""
     try:
@@ -52,47 +89,25 @@ def read_users(session: Session = Depends(get_session)):
         users = results.all()
     # Return the list. 
     # Note: FastAPI handles the JSON conversion and filters data based on UserPublic automatically.
-    return users    
+    return users  
 
 # -----------------------------------------------------------------------------------------
-# routes for the Auth Service
-@app.get("/services/auth/")
-def auth_home():
-    return {"message": "Hello from the Auth Service!"}
-
-# -----------------------------------------------------------------------------------------
-# routes for the Core Service
-@app.get("/services/core/")
-def core_home():
-    return {"message": "Hello from the Core Service!"}
-
-# -----------------------------------------------------------------------------------------
-# routes for the Users Service
-# GET: Uses UserPublic to hide the password
-@app.get("/users", response_model=list[UserPublic])
-def read_users(session: Session = Depends(get_session)):
-    return session.exec(select(User)).all()
-
-
-# -----------------------------------------------------------------------------------------
-# routes for the Notifications Service
-@app.get("/services/notifications/")
+# routes for the Notification Service
+@app.get("/services/notification")
 def notifications_home():
-    return {"message": "Hello from the Notifications Service!"}
+    return {"message": "Hello from the Notification Service!"}
 
 # -----------------------------------------------------------------------------------------
 # routes for the Branding Service
-@app.get("/services/branding/")
+@app.get("/services/branding")
 def branding_home():
     return {"message": "Hello from the Branding Service!"}
 
 # -----------------------------------------------------------------------------------------
 # routes for the Flash Card Service
-@app.get("/services/flashcards/")
+@app.get("/services/flashcard")
 def branding_home():
     return {"message": "Hello from the Flash Card Service!"}
 
 handler = Mangum(app)
-
-
 
