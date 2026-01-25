@@ -49,13 +49,6 @@ Having the handler variable (by wrapping your app with Mangum) means you can del
 the default expected def handler(event, context) function. 
 '''
 
-
-# -----------------------------------------------------------------------------------------
-# Naked routes (not part of a service)
-@app.get("/")
-def welcome():
-    return {"message": "Hello from FastAPI on Lambda and Mangum!"}
-
 # -----------------------------------------------------------------------------------------
 # routes for the Auth Service
 @app.get("/services/auth")

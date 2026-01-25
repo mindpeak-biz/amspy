@@ -1,0 +1,28 @@
+This document provides a high-level overview of the application's architecture.
+
+Monolith vs. Microservices:
+-----------------------------
+
+For now, AMS will be a monolith application written in FastAPI.
+
+The application is deployed on AWS and uses the following AWS services:
+- one Lambda (ams-auth-service)
+- one API Gateway (ams-primary-api-gateway)
+- one S3 bucket (ams-static-assets-bucket-qa)
+- one CloudFront configuration
+
+The API application that serves up:
+  -> HTMX for the HTML partials (including Vue based componenets)
+  -> JSON for the Vue based components
+
+The static front-end pages will reside on S3.
+
+AWS CloudFront will be used to route the request to either:
+  -> S3 for all requests that don't have /services/ in the URL path 
+  -> API Gateway for all requests that have /services/ in the URL path 
+
+For now there is a single Lambda for the AMS application (i.e. a monolith), but will 
+later be split into multiple Lambdas (one per service), and the API Gateway 
+will be configured for the appropriate Lambda to be called based on the URL path: /services/[service name]
+
+
