@@ -6,6 +6,7 @@ Monolith vs. Microservices:
 For now, AMS will be a monolith application written in FastAPI.
 
 The application is deployed on AWS and uses the following AWS services:
+- one domain on Route53 (agenticmindscape-qa.com)
 - one Lambda (ams-auth-service)
 - one API Gateway (ams-primary-api-gateway)
 - one S3 bucket (ams-static-assets-bucket-qa)
