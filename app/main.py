@@ -2,19 +2,21 @@
 
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Request, Depends
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from mangum import Mangum
 from sqlmodel import create_engine, SQLModel, Session, select
 from typing import List
 # import logging
-#import traceback
+# import traceback
 
 from .models import User, UserPublic
-from .services.auth import auth
-from .services.core import core
-from .services.users import users
-from .services.notifications import notifications
-from .services.branding import branding
+# from .services.auth import auth
+# from .services.core import core
+# from .services.users import users
+# from .services.notifications import notifications
+# from .services.branding import branding
 
 
 # Global variables
@@ -29,46 +31,38 @@ def get_session():
 
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
-'''
-Note on mangum:
--------------------
-# default Lambda handler function 
-def handler(event, context): # event and context are both dictionaries
-    pass
-# but since we want a FastAPI app (ASGI interface with routes), we need middleware (an adapter) to translate 
-# a normal Lambda request into an ASGI http request. The middleware for this is called mangum.
-# It handles Function URLs, API Gateway, ALB, and CloudFront Lambda@Edge events.
-
-from mangum import Mangum
-
-app = FastAPI()
-handler = Mangum(app)
-
-Having the handler variable (by wrapping your app with Mangum) means you can delete 
-the default expected def handler(event, context) function. 
-'''
 
 # -----------------------------------------------------------------------------------------
 # routes for the Auth Service
 @app.get("/services/auth")
-def auth_home():
+async def auth_home():
     return {"message": "Hello from the Auth Service!"}
+
+@app.get("/services/auth/login-form/{id}", response_class=HTMLResponse)
+async def auth_home(request: Request, id: str):
+    """HTMX will call this to return the HTML for the login form"""
+    return templates.TemplateResponse(
+        request=request, 
+        name="auth/login-form.html", 
+        context={"id": id} # Pass data to the HTML file via the "context" dictionary
+    )
 
 # -----------------------------------------------------------------------------------------
 # routes for the Core Service
 @app.get("/services/core")
-def core_home():
+async def core_home():
     return {"message": "Hello from the Core Service!"}
 
 # -----------------------------------------------------------------------------------------
 # routes for the Users Service
 @app.get("/services/user")
-def core_home():
+async def core_home():
     return {"message": "Hello from the User Service!"}
 
 @app.get("/services/user/users", response_model=List[UserPublic])
-def read_users(session: Session = Depends(get_session)):
+async def read_users(session: Session = Depends(get_session)):
     """ Returns a list of all users, automatically filtered to the UserPublic schema."""
     try:
         # Select the full User table model
@@ -87,19 +81,19 @@ def read_users(session: Session = Depends(get_session)):
 # -----------------------------------------------------------------------------------------
 # routes for the Notification Service
 @app.get("/services/notification")
-def notifications_home():
+async def notifications_home():
     return {"message": "Hello from the Notification Service!"}
 
 # -----------------------------------------------------------------------------------------
 # routes for the Branding Service
 @app.get("/services/branding")
-def branding_home():
+async def branding_home():
     return {"message": "Hello from the Branding Service!"}
 
 # -----------------------------------------------------------------------------------------
 # routes for the Flash Card Service
 @app.get("/services/flashcard")
-def branding_home():
+async def branding_home():
     return {"message": "Hello from the Flash Card Service!"}
 
 handler = Mangum(app)
