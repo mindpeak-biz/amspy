@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional, Dict, Any
+from pydantic import BaseModel, EmailStr
 from sqlmodel import SQLModel, Field, Column
 from sqlalchemy import String, DateTime, JSON, text
 from sqlalchemy.dialects.postgresql import JSONB
@@ -68,6 +69,10 @@ class UserPublic(UserBase):
     user_luid: str
     created_at: datetime
 
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 '''
 CREATE TABLE IF NOT EXISTS public.users

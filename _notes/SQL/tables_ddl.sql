@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS public.user_sessions
     user_luid character varying(36) NOT NULL,
     user_type character varying(8) NOT NULL,
     user_plan character varying(36) NOT NULL,
-    sponsor_code character varying(7) NOT NULL,
+    sponsor_code character varying(7),
     session_data JSON,
     expires_at timestamp with time zone NOT NULL DEFAULT NOW() + INTERVAL '24 hours',
     CONSTRAINT sessionid_pkey PRIMARY KEY (sessionid)

@@ -6,6 +6,8 @@ In the API Gateway configuration:
 
 When developing, there are two separate processes you need to start up:
 
+To get the OpenAPI docs for the FastAPI project: localhost:8000/docs
+
 One is for the APIs (REST and HTMX) => FastAPI runs on port 8000
 1. cd /home/aki/dev/amspy
 2. $ uv run fastapi dev ./app/main.py 
